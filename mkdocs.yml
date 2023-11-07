@@ -4,12 +4,16 @@ theme:
   name: material
   features:
     - content.code.select
+  font:
+    text: Roboto Mono
+    code: JetBrains Mono
 
 nav:
   - Home: "index.md"
   - "课程笔记":
       - MIT6.S081:
           - course_notes/mitos/trap.md
+          - course_notes/mitos/lazy.md
 
 markdown_extensions:
   - pymdownx.highlight:
