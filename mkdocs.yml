@@ -2,3 +2,9 @@ site_name: Aniurm Notes
 
 theme:
   name: material
+
+nav:
+  - Home: "index.md"
+  - "课程笔记":
+      - MIT6.S081:
+          - course_notes/mitos/trap.md
