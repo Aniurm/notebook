@@ -1,4 +1,4 @@
-# Lab: Trap
+# Lab: traps
 
 ## Backtrace
 
@@ -59,9 +59,7 @@ backtrace(void)
 - If an application calls `sigalarm(n, fn)`, then after every `n` "ticks" of CPU time that the program consumes, the kernel should cause application function `fn` to be called.
 - When `fn` returns, the application should resume where it left off.
 
-### **test0: invoke handler**
-
-这个部分先完成`sigalarm`，让 kernel 能够跳转到 alarm handler，而不考虑恢复
+### **invoke handler**
 
 **Update `user/usys.pl` (which generates `user/usys.S`), `kernel/syscall.h`, and `kernel/syscall.c` to allow `alarmtest` to invoke the `sigalarm` and `sigreturn` system calls**
 
@@ -92,3 +90,97 @@ w_sepc(p->trapframe->epc);
 ```
 
 所以只要修改`p->trapframe->epc`，就可以控制 user space 代码 resumes execution 的位置
+
+---
+
+最开始的时候，用户需要调用 system call -- sigalarm 来配置、激活 alarm。
+
+没啥好说的，配置`struct proc`中 alarm 相关的 fields 即可
+
+```c title="sysproc.c, sys_sigalarm"
+uint64
+sys_sigalarm(void)
+{
+  // get ticks in a0 and handler function in a1
+  int ticks;
+  if (argint(0, &ticks) < 0)
+    return -1;
+
+  uint64 handler;
+  if (argaddr(1, &handler) < 0)
+    return -1;
+
+  struct proc *p = myproc();
+
+  if (ticks == 0 && handler == 0) {
+    // disable alarm
+    p->alarm_interval = p->alarm_handler_addr = p->alarm_ticks_left = 0;
+    return 0;
+  }
+
+  p->alarm_interval = ticks;
+  p->alarm_handler_addr = handler;
+  p->alarm_ticks_left = ticks;
+  return 0;
+}
+```
+
+当用户调用`sigalarm`之后，仅仅是把`struct proc`里面的几个 fields 的值改了一下而已。
+
+所以还需要在发生 timer interrupt 的时候，根据该进程的 alarm 信息，进行对应的处理
+
+```c title="kernel/trap.c, usertrap"
+  // give up the CPU if this is a timer interrupt.
+  if(which_dev == 2) {
+    if (p->alarm_interval > 0) {
+      if (--p->alarm_ticks_left == 0 && p->handler_executing == 0) {
+        p->alarm_ticks_left = p->alarm_interval;
+
+        // save original trapframe
+        memmove(p->alarm_trapframe, p->trapframe, sizeof(struct trapframe));
+
+        p->trapframe->epc = p->alarm_handler_addr;
+        p->handler_executing = 1;
+      }
+    }
+    yield();
+  }
+```
+
+- 检查是否开启 alarm`if (p->alarm_interval > 0)`如果开启：
+  - `--p->alarm_ticks_left`减小倒计时。如果倒计时变成 0：
+    - reset 倒计时
+    - `p->trapframe->epc = p->alarm_handler_addr;`这样返回到 user space 时的 PC 就是 alarm handler 的地址
+
+**后续要求：when the alarm handler is done, control returns to the instruction at which the user program was originally interrupted by the timer interrupt**
+
+接下来根据 hints 继续解释代码
+
+**user alarm handlers are required to call the `sigreturn` system call when they have finished.**
+
+**Have `usertrap` save enough state in `struct proc` when the timer goes off that `sigreturn` can correctly return to the interrupted user code.**
+
+上面`usertrap`的代码中，`memmove(p->alarm_trapframe, p->trapframe, sizeof(struct trapframe));`把进程原本的`p->trapframe`保存到一个新增的 field：`alarm_trapframe`，备份了之后，我们就可以对`p->trapframe`为所欲为了，因为`p->trapframe`会在`sigreturn`中被恢复。
+
+**Prevent re-entrant calls to the handler----if a handler hasn't returned yet, the kernel shouldn't call it again.**
+
+加一个标志位即可：如果进入了 alarm handler，就把`p->handler_executing`设为 1，handler 执行结束后调用的`sigreturn`会把`p->handler_executing`重新置 0。每次 timer interrupt 都需要检查`p->handler_executing`是否为 0.
+
+### resume interrupted code
+
+```c
+uint64
+sys_sigreturn(void)
+{
+  struct proc *p = myproc();
+  memmove(p->trapframe, p->alarm_trapframe, sizeof(struct trapframe));
+  p->handler_executing = 0;
+  return 0;
+}
+```
+
+恢复之前备份好的数据，把标志位设为 0 即可。
+
+---
+
+![test](img/trap-res.png)
