@@ -17,6 +17,7 @@ nav:
           - course_notes/mitos/cow.md
       - 集成电路:
           - course_notes/ic/mos-physic.md
+          - course_notes/ic/mos-small-signal.md
 
 markdown_extensions:
   - pymdownx.highlight:
