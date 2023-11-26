@@ -19,6 +19,8 @@ nav:
           - course_notes/ic/mos-physic.md
           - course_notes/ic/mos-small-signal.md
           - course_notes/ic/single-stage-amp.md
+      - 深度学习:
+          - course_notes/deep-learning/lrnn.md
 
 markdown_extensions:
   - pymdownx.highlight:
