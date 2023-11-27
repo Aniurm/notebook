@@ -21,6 +21,7 @@ nav:
           - course_notes/ic/single-stage-amp.md
       - 深度学习:
           - course_notes/deep-learning/lrnn.md
+          - course_notes/deep-learning/cnn.md
 
 markdown_extensions:
   - pymdownx.highlight:
