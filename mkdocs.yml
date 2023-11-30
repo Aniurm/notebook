@@ -15,6 +15,7 @@ nav:
           - course_notes/mitos/trap.md
           - course_notes/mitos/lazy.md
           - course_notes/mitos/cow.md
+          - course_notes/mitos/thread.md
       - 集成电路:
           - course_notes/ic/mos-physic.md
           - course_notes/ic/mos-small-signal.md
