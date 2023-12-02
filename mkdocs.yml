@@ -1,4 +1,4 @@
-site_name: Aniurm Notes
+site_name: Aniurm's Notebook
 
 theme:
   name: material
@@ -16,6 +16,7 @@ nav:
           - course_notes/mitos/lazy.md
           - course_notes/mitos/cow.md
           - course_notes/mitos/thread.md
+          - course_notes/mitos/locks.md
       - 集成电路:
           - course_notes/ic/mos-physic.md
           - course_notes/ic/mos-small-signal.md
