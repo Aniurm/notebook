@@ -18,6 +18,8 @@ nav:
           - course_notes/mitos/thread.md
           - course_notes/mitos/locks.md
           - course_notes/mitos/fs.md
+      - CMU15-445/645:
+          - course_notes/cmu15445/primer.md
       - 集成电路:
           - course_notes/ic/mos-physic.md
           - course_notes/ic/mos-small-signal.md
@@ -38,6 +40,8 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.arithmatex:
       generic: true
+  - attr_list
+  - md_in_html
 
 extra_css:
   - css/extra.css
