@@ -17,6 +17,7 @@ nav:
           - course_notes/mitos/cow.md
           - course_notes/mitos/thread.md
           - course_notes/mitos/locks.md
+          - course_notes/mitos/fs.md
       - 集成电路:
           - course_notes/ic/mos-physic.md
           - course_notes/ic/mos-small-signal.md
