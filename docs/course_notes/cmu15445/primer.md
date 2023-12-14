@@ -1,4 +1,4 @@
-# PROJECT #0 - C++ PRIMER
+# C++ PRIMER
 
 ## Project Specification
 
