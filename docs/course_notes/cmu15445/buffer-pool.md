@@ -36,3 +36,36 @@ The buffer pool is responsible for **moving physical pages back and forth from m
 
 !!! failure "误区"
     看了下网上的一些实现，发现有些人也维护了两个`std::list<frame_id_t>`，但是他们对访问次数超过K的list使用了LRU算法。我认为这是不能等同于LRU-K的。举一个例子，假设K=2。现在对于frame 1, 访问时间是1, 9. 对于frame 2, 访问时间是4, 5. 现在的时间为10, 我需要Evict一个frame。如果按照LRU算法，那么frame 2会被替换，但是按照LRU-K算法，frame 1会被替换（因为frame 1的backward k-distance是10-1=9，frame 2的backward k-distance是10-4=6）所以这两个算法是不同的。我这边老老实实地$O(N)$遍历（曾经想用堆，但是维护堆的时间复杂度也差不多，实现起来还麻烦）
+
+## Task #2 - Disk Scheduler
+
+The disk scheduler can be used by other components to queue disk requests, represented by a `DiskRequest` struct. The disk scheduler will maintain a background worker thread which is responsible for processing scheduled requests.
+
+The disk scheduler will utilize a shared queue to schedule and process the `DiskRequest`s. One thread will add 
+requests to the queue, and the disk scheduler's background worker will process requests.
+
+### Disk Manager
+
+The Disk Manager class reads and writes the page data from and to the disk. Your disk scheduler will 
+use `DiskManager::ReadPage()` and `DiskManager::WritePage()` when it is processing a read or write request.
+
+!!! note "Task"
+    * `Schedule(DiskRequest r)` : Schedules a request for the `DiskManager` to execute. The DiskRequest struct specifies whether the request is for a read/write, where the data should be written into/from, and the page ID for the operation. The `DiskRequest` also includes a `std::promise` whose value should be set to true once the request is processed.
+    * `StartWorkerThread()` : Start method for the background worker thread which processes the scheduled requests. The worker thread is created in the DiskScheduler constructor and calls this method. This method is responsible for getting queued requests and dispatching them to the `DiskManager`. Remember to set the value on the `DiskRequest`'s callback to signal to the request issuer that the request has been completed. This should not return until the `DiskScheduler`'s destructor is called.
+
+乍一看很高级，实际上很简单。`Schedule`方法就是把`DiskRequest`放到`std::queue<DiskRequest>`中，`StartWorkerThread`运行在
+background worker thread中，死循环从`std::queue<DiskRequest>`中取出`DiskRequest`，然后调用`DiskManager::ReadPage()`和`DiskManager::WritePage()`，最后设置`DiskRequest`的`std::promise`的值。直到取出`std::nullopt`才退出。
+
+## Task #3 - Buffer Pool Manager
+
+**The `BufferPoolManager` is responsible for fetching database pages from disk with the `DiskScheduler` and storing them in memory. The `BufferPoolManager` can also schedule writes of dirty pages out to disk** when it is either explicitly instructed to do so or when it needs to evict a page to make space for a new page.
+
+All in-memory pages in the system are represented by `Page` objects. It is important to understand that **`Page` objects are just containers for memory in the buffer pool and thus are not specific to a unique page.** The `Page` object's identifier (`page_id`) keeps track of what physical page it contains.
+Each `Page` object also maintains a counter for the number of threads that have "pinned" that page.
+
+!!! note "Task"
+    * `FetchPage(page_id_t page_id)`
+    * `UnpinPage(page_id_t page_id, bool is_dirty)`, the `is_dirty` parameter keeps track of whether a page was modified while it was pinned.
+    * `FlushPage(page_id_t page_id)`: flush a page regardless of its pin status.
+    * `NewPage(page_id_t* page_id)`: should call `AllocatePage`
+    * `DeletePage(page_id_t page_id)`: should call `DeallocatePage`
