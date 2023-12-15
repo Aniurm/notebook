@@ -18,6 +18,7 @@ nav:
           - course_notes/mitos/thread.md
           - course_notes/mitos/locks.md
           - course_notes/mitos/fs.md
+          - course_notes/mitos/mmap.md
       - CMU15-445/645:
           - course_notes/cmu15445/primer.md
           - course_notes/cmu15445/buffer-pool.md
