@@ -28,7 +28,7 @@ The buffer pool is responsible for **moving physical pages back and forth from m
 
 * `Size()`：返回`curr_size_`
 * `SetEvictable`：修改`LRUKNode`的数据，维护两个`std::list<frame_id_t>`，修改`curr_size_`等信息。
-* `Remove`：把`LRUKNode`中的history清空，维护两个`std::list<frame_id_t>`。
+* `Remove`：我直接把`LRUKNode`删掉了，维护`std::list<frame_id_t>`等数据。当Buffer Pool Manager调用`DeletePage`时，会调用`Remove`，这表明Buffer Pool不再关心这个frame，所以可以直接删掉。
 * `RecordAccess`：修改`LRUKNode`中的history，维护两个`std::list<frame_id_t>`。
 * `Evict`：先删去访问次数小于K的list的第一个元素（FIFO），如果访问次数都大于K，那么遍历访问次数大于K的list，找到backward k-distance最大的frame_id，然后删除这个frame_id。时间复杂度$O(n)$。
 
@@ -69,3 +69,94 @@ Each `Page` object also maintains a counter for the number of threads that have 
     * `FlushPage(page_id_t page_id)`: flush a page regardless of its pin status.
     * `NewPage(page_id_t* page_id)`: should call `AllocatePage`
     * `DeletePage(page_id_t page_id)`: should call `DeallocatePage`
+
+从`BufferPoolManager`的代码，我们可以看出一些端倪：
+```cpp title="buffer_pool_manager.h"
+ private:
+  /** Number of pages in the buffer pool. */
+  const size_t pool_size_;
+  /** The next page id to be allocated  */
+  std::atomic<page_id_t> next_page_id_ = 0;
+
+  /** Array of buffer pool pages. */
+  Page *pages_;
+  /** Pointer to the disk scheduler. */
+  std::unique_ptr<DiskScheduler> disk_scheduler_ __attribute__((__unused__));
+  /** Pointer to the log manager. Please ignore this for P1. */
+  LogManager *log_manager_ __attribute__((__unused__));
+  /** Page table for keeping track of buffer pool pages. */
+  std::unordered_map<page_id_t, frame_id_t> page_table_;
+  /** Replacer to find unpinned pages for replacement. */
+  std::unique_ptr<LRUKReplacer> replacer_;
+  /** List of free frames that don't have any pages on them. */
+  std::list<frame_id_t> free_list_;
+  /** This latch protects shared data structures. We recommend updating this comment to describe what it protects. */
+  std::mutex latch_;
+```
+
+Buffer Pool的本质就是`Page *pages_`, 一个`Page`数组。在这个数组里面的每一个`Page` object 都是一个container，用于存储从
+disk读取的page。`frame_id_t`实际上可以直接理解为数组的下标。
+
+这从`BufferPoolManager`的constructor中可以看出来：
+用循环把`pages_`的下标放到`free_list_`中。
+```cpp title="buffer_pool_manager.cpp"
+BufferPoolManager::BufferPoolManager(size_t pool_size, DiskManager *disk_manager, size_t replacer_k,
+                                     LogManager *log_manager)
+    : pool_size_(pool_size), disk_scheduler_(std::make_unique<DiskScheduler>(disk_manager)), log_manager_(log_manager) {
+  // we allocate a consecutive memory space for the buffer pool
+  pages_ = new Page[pool_size_];
+  replacer_ = std::make_unique<LRUKReplacer>(pool_size, replacer_k);
+
+  // Initially, every page is in the free list.
+  for (size_t i = 0; i < pool_size_; ++i) {
+    free_list_.emplace_back(static_cast<int>(i));
+  }
+}
+```
+
+接下来就可以宏观地理解Buffer Pool Manager。首先，它为什么要存在？在我看来，
+Buffer Pool把Disk中的page读取到内存中，这样就可以加快访问速度，减少Disk IO。它抽象了内存和Disk之间的交互，让其他模块不需要关心内存和Disk的交互细节。
+
+如何实现Buffer Pool Manager呢？前面已经完成了基本的组件，现在只需要把它们组合起来就可以了。当Buffer Pool Manager
+需要与Disk交互时，它会把`DiskRequest`发送给`DiskScheduler`，等`DiskScheduler`处理完毕后，`DiskScheduler`通知
+`BufferPoolManager`。 Buffer Pool Manager调用`LRUKReplacer`的接口，记录page的访问情况，根据不同情况配置`SetEvictable`。
+当它需要替换一个page时，它会调用`LRUKReplacer`的`Evict`方法，`LRUKReplacer`会返回一个`frame_id_t`，然后Buffer Pool Manager就可以把这个`frame_id_t`对应的`Page`替换掉。
+
+宏观上理解了Buffer Pool Manager，接下来的细节就不必多说了，GPT和Copilot在实现、测试的过程中可以起到很大的帮助。
+
+最喜欢的一集：
+
+```
+Autograder Score
+100.0 / 100.0
+Passed Tests
+Build.Prepare (0/0)
+Build (0/0)
+Build.ClangFormat (0/0)
+Build.ClangTidy (0/0)
+Build.RelWithDebInfo (0/0)
+BufferPoolManagerTest.SchedulerCheck (0/0)
+LRUKReplacerTest.SampleTest (6/6)
+LRUKReplacerTest.Evict (6/6)
+LRUKReplacerTest.Size (6/6)
+LRUKReplacerTest.ConcurrencyTest (7/7)
+DiskSchedulerTest.ScheduleWriteReadPageTest (7/7)
+DiskSchedulerTest.ScheduleManyWrites (9/9)
+BufferPoolManagerTest.SampleTest (2/2)
+BufferPoolManagerTest.BinaryDataTest (2/2)
+BufferPoolManagerTest.NewPage (2/2)
+BufferPoolManagerTest.UnpinPage (2/2)
+BufferPoolManagerTest.FetchPage (2/2)
+BufferPoolManagerTest.DeletePage (2/2)
+BufferPoolManagerTest.IsDirty (2/2)
+BufferPoolManagerTest.ConcurrencyTest (3/3)
+BufferPoolManagerTest.IntegratedTest (3/3)
+BufferPoolManagerTest.HardTest_1 (6/6)
+BufferPoolManagerTest.HardTest_2 (6/6)
+BufferPoolManagerTest.HardTest_3 (6/6)
+BufferPoolManagerTest.HardTest_4 (6/6)
+Leaderboard.QPS.1 (5/5)
+Leaderboard.QPS.2 (5/5)
+Leaderboard.QPS.3 (5/5)
+Leaderboard.Summary (0/0)
+```

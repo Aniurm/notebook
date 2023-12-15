@@ -22,6 +22,7 @@ nav:
       - CMU15-445/645:
           - course_notes/cmu15445/primer.md
           - course_notes/cmu15445/buffer-pool.md
+          - course_notes/cmu15445/hash-index.md
       - 集成电路:
           - course_notes/ic/mos-physic.md
           - course_notes/ic/mos-small-signal.md
