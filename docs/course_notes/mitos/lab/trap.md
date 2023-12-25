@@ -10,7 +10,7 @@
 
 对于这个实验，很重要的一张图：
 
-![Untitled](img/Untitled.png)
+![Untitled](../img/Untitled.png)
 
 stack 从高地址向低地址增长，在这个图是从上到下的方向。而 backtrace 是从最 low 的 stack 开始（也就是最新的、刚刚发生 panic 的 stack），从下往上遍历所有 stack。
 
@@ -183,4 +183,4 @@ sys_sigreturn(void)
 
 ---
 
-![test](img/trap-res.png)
+![test](../img/trap-res.png)

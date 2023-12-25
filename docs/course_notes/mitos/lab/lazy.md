@@ -53,7 +53,7 @@ usertrap(): unexpected scause 0x000000000000000f pid=3
 panic: uvmunmap: not mapped
 ```
 
-![trap table](img/trap-table.webp)
+![trap table](../img/trap-table.webp)
 
 - `scause=0x000000000000000f`表示 Page fault
 
