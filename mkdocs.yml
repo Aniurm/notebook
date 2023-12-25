@@ -11,30 +11,31 @@ theme:
 nav:
   - Home: "index.md"
   - "课程笔记":
-      - MIT6.S081:
-          - course_notes/mitos/trap.md
-          - course_notes/mitos/lazy.md
-          - course_notes/mitos/cow.md
-          - course_notes/mitos/thread.md
-          - course_notes/mitos/locks.md
-          - course_notes/mitos/fs.md
-          - course_notes/mitos/mmap.md
-      - CMU15-445/645:
-          - course_notes/cmu15445/primer.md
-          - course_notes/cmu15445/buffer-pool.md
-          - course_notes/cmu15445/hash-index.md
-      - 集成电路:
-          - course_notes/ic/mos-physic.md
-          - course_notes/ic/mos-small-signal.md
-          - course_notes/ic/single-stage-amp.md
-      - 深度学习:
-          - course_notes/deep-learning/lrnn.md
-          - course_notes/deep-learning/cnn.md
-      - CS188:
-          - course_notes/cs188/lecture/1-Intro-to-AI.md
-          - course_notes/cs188/lecture/2-Uninformed-Search.md
-          - course_notes/cs188/lecture/3-Informed-Search.md
-          - course_notes/cs188/lecture/4-CSPs.md
+    - MIT6.S081:
+      - Labs:
+        - course_notes/mitos/lab/trap.md
+        - course_notes/mitos/lab/lazy.md
+        - course_notes/mitos/lab/cow.md
+        - course_notes/mitos/lab/thread.md
+        - course_notes/mitos/lab/locks.md
+        - course_notes/mitos/lab/fs.md
+        - course_notes/mitos/lab/mmap.md
+    - CMU15-445/645:
+        - course_notes/cmu15445/primer.md
+        - course_notes/cmu15445/buffer-pool.md
+        - course_notes/cmu15445/hash-index.md
+    - 集成电路:
+        - course_notes/ic/mos-physic.md
+        - course_notes/ic/mos-small-signal.md
+        - course_notes/ic/single-stage-amp.md
+    - 深度学习:
+        - course_notes/deep-learning/lrnn.md
+        - course_notes/deep-learning/cnn.md
+    - CS188:
+        - course_notes/cs188/lecture/1-Intro-to-AI.md
+        - course_notes/cs188/lecture/2-Uninformed-Search.md
+        - course_notes/cs188/lecture/3-Informed-Search.md
+        - course_notes/cs188/lecture/4-CSPs.md
   - "论文阅读":
       - paper_read/virtio-linux-overview.md
       - paper_read/SR-IOV_Notes.md

@@ -1,4 +1,4 @@
-# Lab: Multithreading
+# Multithreading
 
 最简单的lab没有之一。
 

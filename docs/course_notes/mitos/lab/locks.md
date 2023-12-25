@@ -1,4 +1,4 @@
-# Lab: locks
+# locks
 
 !!! danger "Lock contention"
 

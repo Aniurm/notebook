@@ -1,4 +1,4 @@
-# Lab: xv6 lazy page allocation
+# xv6 lazy page allocation
 
 ## Background
 

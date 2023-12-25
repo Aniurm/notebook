@@ -1,4 +1,4 @@
-# Lab: file system
+# file system
 
 In this lab you will add large files and symbolic links to the xv6 file system.
 

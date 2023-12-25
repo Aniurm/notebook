@@ -1,4 +1,4 @@
-# Lab: Copy-on-Write Fork for xv6
+# Copy-on-Write Fork 
 
 !!! question "The Problem"
 
