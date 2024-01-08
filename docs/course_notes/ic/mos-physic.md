@@ -80,6 +80,8 @@ $$
 
 ![img](img/mos-small-vds.png)
 
+深线性区（$V_{DS}$非常小），MOS管可以当成压控电阻，注意MOS管是压控器件
+
 ### I/V characteristics in saturation region
 
 $$
@@ -95,6 +97,8 @@ $$
 ![saturation region](./img/mos-saturate.png)
 
 ### Application of MOS in saturation region
+
+当$V_{DS}$较大时，$I_D$不会随$V_{DS}$变化（非常缓慢），因此：
 
 Saturated MOS can be used as voltage-controlled current source (VCCS).
 
