@@ -30,6 +30,9 @@ nav:
       - 深度学习:
           - course_notes/deep-learning/lrnn.md
           - course_notes/deep-learning/cnn.md
+      - CS188:
+          - course_notes/cs188/lecture/1-Intro-to-AI.md
+          - course_notes/cs188/lecture/2-Uninformed-Search.md
 
 markdown_extensions:
   - pymdownx.highlight:
