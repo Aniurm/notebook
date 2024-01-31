@@ -34,6 +34,8 @@ nav:
           - course_notes/cs188/lecture/1-Intro-to-AI.md
           - course_notes/cs188/lecture/2-Uninformed-Search.md
           - course_notes/cs188/lecture/3-Informed-Search.md
+  - "论文阅读":
+      - paper_read/virtio-linux-overview.md
 
 markdown_extensions:
   - pymdownx.highlight:
