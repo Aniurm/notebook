@@ -36,6 +36,7 @@ nav:
           - course_notes/cs188/lecture/3-Informed-Search.md
   - "论文阅读":
       - paper_read/virtio-linux-overview.md
+      - paper_read/SR-IOV_Notes.md
 
 markdown_extensions:
   - pymdownx.highlight:
