@@ -27,3 +27,9 @@ VirtIO is an abstraction layer over virtual I/O devices in Linux, **providing a 
 * Current VirtIO Drivers
     * VirtIO-Block
     * VirtIO-Net
+
+## My understanding
+
+![diff-hypervisor](./img/diff-hypervisor.png){width="600"}
+
+![virtio](./img/virtio.png){width="600"}
