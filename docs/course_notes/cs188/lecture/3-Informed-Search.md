@@ -43,7 +43,79 @@ state as input and output a corresponding estimate.
 
 * $g(n)$ - The function representing total backwards cost
   computed by UCS.
+* $h(n)$ - The *heuristic value* function, or estimated forward
+  cost, used by greedy search.
+* $f(n) = g(n) + h(n)$ - The function representing the
+  estimated total cost used by A*.
+
+The condition required for optimality when using A\* tree search
+is known as **admissibility**. Defining $h^*(n)$ as the true optimal
+forward cost to reach a goal state a given node $n$, 
+we can formulate the adimissibility constraint as:
+
+$$
+\forall n, \quad 0 \leq h(n) \leq h^*(n)
+$$
+
+!!! quote "Theorem"
+    For a given search problem, if the admissibility constraint is satisfied
+    by a heuristic function $h$, using A* tree search with $h$ on that 
+    search problem will yield an optimal solution.
+
+An additional caveat of graph search is that it tends to ruin the
+optimality of A*, even under admissible heuristics. 
+
+So here comes the concept of **consistency**. Consistency is a stronger condition that encompasses 
+admissibility and adds additional requirements. 
+
+**Consistency**: We enforce not only that a heuristic underestimates
+the total distance to a goal from any given state, but also the cost/weight
+of each edge in the graph. The consistency constraint is formulated as:
+
+$$
+\forall A,\ C \quad h(A) - h(C) \leq cost(A, C)
+$$
+
+!!! quote "Theorem"
+    For a given search problem, if the **consistency constraint** is satisfied
+    by a heuristic function $h$, using A* graph search with $h$ on that 
+    search problem will yield an optimal solution.
+
+**Important Note**: 
+
+* For heuristic that are either admissible or consistent to be valid,
+  it must by definition be the case that $\forall goal, \ \ h(goal) = 0$.
+* Consistency *implies* admissibility: if no edge costs are overestimated
+  (as guaranteed by consistency), the total estimated cost from any node
+  to the goal will also be underestimated.
 
 ## Dominance
 
+The standard metric for comparing heuristics is the concept of **dominance**.
+
+If heuristic a is dominant over heuristic b, then the estimated goal distance
+for a is greater than the estimated goal distance for b for every node in the 
+state space graph.
+
+$$
+\forall n, \quad h_a(n) \geq h_b(n)
+$$
+
+> The **trivial heuristic** is defined as $h(n) = 0$ for all $n$, reducing A* to UCS.
+
+![lattice](../img/lattice.png){width="140"}
+
+!!! tip "Common Practice"
+    Generate multiple admisible/consistent heuristics for any given search
+    problem and compute the max over the values output by them
+    to generate a heuristic that dominates (and hence is better than) all
+    of them.
+
 ## Search: Summary
+
+* Search problem. Their components: *state space*, *actions*, *transition function*,
+  *action cost*, *start state*, *goal state*.
+* Rationality: The agent seeks to maximize their expected utility.
+* Use PEAS to define the task environment.
+* Uninformed search: BFS, DFS, UCS.
+* Informed search: Greedy search, A* search.
