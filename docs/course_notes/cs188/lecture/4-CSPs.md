@@ -63,3 +63,40 @@ violate the constraint if assigned.
 The idea of forward checking can be generalized to **arc consistency**.
 
 ### Arc Consistency
+
+!!! info
+    For arc consistency, we interpret each undirected edge of the constraint graph
+    for a CSP as two directed edges pointing to opposite directions.
+    Each of these directed edges is called an **arc**.
+
+Arc consistency关注的是二元约束，也就是涉及两个变量的约束。对于一个arc，
+在tail的domain中任意一个值都能找到一个head的值，使得这两个值满足约束，那么这个arc就是consistent的。
+对于一个CSP，如果所有的arc都是consistent的，那么这个CSP就是arc consistent的。
+
+!!! tip "Takeaway"
+
+    * If X loses a value, neighbors of X need to be rechecked.
+    * Arc consistency detects failure earlier than forward checking.
+    * Can be run as a preprocessor or after each assignment.
+    * Remember: delete from the tail!
+
+The arc consistency algorithm is as follows:
+
+* Begin by storing all arcs in the constraint graph for the CSP in a queue $Q$.
+* Iteratively remove arcs from $Q$ and enforce the condition that in each removed arc
+    $X_{i} \longrightarrow X_{j}$, for every remaining value $v$ for the tail variable
+    $X_i$, there is at least one remaining value $w$ for the head variable $X_j$ such that
+    the assignment $X_i = v$ and $X_j = w$ does not violate any constrains.
+    If some value $v$ for $X_i$ would not work with any of the remaining values for $X_j$,
+    we remove $v$ from the set of possible values for $X_i$.
+* If at least one value is removed for $X_i$ when enforcing arc consistency for an arc
+    $X_i \longrightarrow X_j$, add arcs of the form $X_k \longrightarrow X_i$ to $Q$,
+    for all unassigned variables $X_k$.
+* Continue until $Q$ is empty, or the domain of some variables is empty and 
+    triggers a backtrack.
+
+Arc consistency is typically implemented with the AC-3 algorithm:
+
+
+!!! quote ""
+    ![ac-3](../img/ac-3.png)
