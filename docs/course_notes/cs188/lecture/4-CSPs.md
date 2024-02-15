@@ -100,3 +100,29 @@ Arc consistency is typically implemented with the AC-3 algorithm:
 
 !!! quote ""
     ![ac-3](../img/ac-3.png)
+
+## Ordering
+
+!!! note ""
+    It’s often much more effective to compute the next variable and corresponding value "on the fly" with two broad principles, **minimum remaining values** and **least constraining value**.
+
+* *Minimum Remaining Values (MRV)* - When selecting which variable to assign next, using an MRV policy chooses whichever unassigned variable has the fewest valid remaining values (the *most constrained variable*).
+* *Least Constraining Value (LCV)* - Similarly, when selecting which value to assign next, a good policy to implement is to select the value that prunes the fewest values from the domains of the remaining unassigned values.
+
+## Structure
+
+A final class of improvements to solving constraint satisfaction problems are those that exploit their structure.
+
+### Tree-Structured CSPs
+
+We can solve **tree-structured CSPs** (one that has no loops in its constraint graph) in $O(n \cdot d^2)$ time, using the tree-structured CSP algorithm:
+
+## Local Search
+
+### Hill-Climbing Search
+
+### Simulated Annealing Search
+
+### Genetic Algorithms
+
+## Summary
