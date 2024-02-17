@@ -36,9 +36,11 @@ nav:
         - course_notes/cs188/lecture/2-Uninformed-Search.md
         - course_notes/cs188/lecture/3-Informed-Search.md
         - course_notes/cs188/lecture/4-CSPs.md
-  - "论文阅读":
+  - 论文阅读:
+    - X-NIC:
       - paper_read/virtio-linux-overview.md
       - paper_read/SR-IOV_Notes.md
+      - paper_read/Performance_Study_10GbE_NICs_SR-IOV.md
 
 markdown_extensions:
   - pymdownx.highlight:
