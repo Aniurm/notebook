@@ -107,7 +107,9 @@ Arc consistency is typically implemented with the AC-3 algorithm:
     It’s often much more effective to compute the next variable and corresponding value "on the fly" with two broad principles, **minimum remaining values** and **least constraining value**.
 
 * *Minimum Remaining Values (MRV)* - When selecting which variable to assign next, using an MRV policy chooses whichever unassigned variable has the fewest valid remaining values (the *most constrained variable*).
+    * Fail-fast ordering: 你总要赋值给所有的变量，那么现在有一些变量有很多remaining values(易处理)，有一些变量只有很少的remaining values(难处理)，那么你就应该先处理那些难搞的变量，这样如果有问题，你就能早点发现，早点backtrack，而不是浪费时间在搞easy stuff，最后才发现有问题。     
 * *Least Constraining Value (LCV)* - Similarly, when selecting which value to assign next, a good policy to implement is to select the value that prunes the fewest values from the domains of the remaining unassigned values.
+    * 跟选择variable的时候不同，你并不需要把所有的value都试一遍，所以你可以先尝试那些prune最少的value，这样你给其他variable留下的domain就会更大，更有可能找到一个solution。
 
 ## Structure
 
@@ -117,12 +119,71 @@ A final class of improvements to solving constraint satisfaction problems are th
 
 We can solve **tree-structured CSPs** (one that has no loops in its constraint graph) in $O(n \cdot d^2)$ time, using the tree-structured CSP algorithm:
 
+* Pick an arbitrary node in the constraint graph for the CSP to serve as the root of the tree.
+* Convert all undirected edges in the tree to directed edges that point away from the root. Then **linearize** (or **topologically sort**) the resulting directed acyclic graph.
+      * 简单来说就是把tree转化成一个有向图，然后把node排序，让每一条edge都是从左往右指的。
+
+![tree-structured-csp](../img/tree-csp-algorithm.png){width="800"}
+
+* Perform a **backwards pass** of arc consistency.
+      * 从右往左遍历，enforce arc consistency for all arcs $Parent(X_i) \longrightarrow X_i$.
+      * 这可能会prune掉一些value。
+
+![](../img/after-backwards-pass.png){width="400"}
+
+* Finally, perform a **forwards assignment**.
+    * Starting from $X_1$ and going to $X_n$ (从左往右), assign each $X_i$ a value consistent with that of its parents.
+    * Because we’ve enforced arc consistency on all of these arcs, this iterative assignment guarantees a correct solution.
+
+#### Cutset Conditioning
+
+有些CSP的constraint graph不是tree-structured的，但是我们可以通过cutset conditioning来把它变成tree-structured的，然后再用tree-structured CSP algorithm来解决。
+
+![](../img/cutset-conditioning.png){width="800"}
+
+* First finding the smallest subset of variables in a constraint graph such that their removal results in a tree (such a subset is known as a **cutset** for the graph).
+* Once the smallest cutset is found, we assign all variables in it and prune the domains of all neighboring nodes.
+* What’s left is a tree-structured CSP, upon which we can solve with the tree-structured CSP algorithm.
+
 ## Local Search
+
+Backtracking search isn't the only algorithm for solving constraint satisfaction problems. Another widely used algorithm is **local search**.
+
+!!! tip "Idea"
+    **Iterative improvement** - start with some random assignment to values then iteratively select a random conflicted variable and reassign its value to the one that violates the fewest constraints until no more constraint violations exist (a policy known as the *min-conflicts heuristic*).
+
+Local search is both incomplete and suboptimal, there is a critical ratio around which using local search becomes extremely expensive:
+
+$$
+R = \frac{number \ \ of \ \ constraints}{number \ \ of \ \ variables}
+$$
+
+
+![](../img/critical-ratio.png){width="400"}
+
+We wish to find the state that corresponds to the highest objective value.
+
+![](../img/objective-function.png){width="700"}
+
+The basic idea of local search algorithms is that from each state they locally move towards states that have a higher objective value until a maximum (hopefully the global) is reached.
 
 ### Hill-Climbing Search
 
+* Moves to better states but can get trapped at local maxima or plateaus.
+* Variants like stochastic hill-climbing improve results at the cost of more iterations.
+
 ### Simulated Annealing Search
+
+* Aims to combine random walk (randomly moves to nearby states) and hill-climbing to obtain a complete and efficient search algorithm.
 
 ### Genetic Algorithms
 
 ## Summary
+
+Constraint satisfaction problems in general don't have an efficient algorithm which solves them in polynomial time.
+
+However, we can often find solutions in an acceptable amount of time:
+
+* *Filtering* - Filtering handles **pruning the domains of unassigned variables ahead of time to prevent unnecessary backtracking**. The two important filtering techniques we’ve covered are *forward checking* and *arc consistency*.
+* *Ordering* - Ordering handles **selection of which variable or value to assign next to make backtracking as unlikely as possible**. For variable selection, we learned about a *MRV policy* and for value selection we learned about a *LCV policy*.
+* *Structure* - If a CSP is tree-structured or close to tree-structured, we can **run the tree-structured CSP algorithm on it to derive a solution in linear time**. Similarly, if a CSP is close to tree structured, we can use *cutset conditioning* to transform the CSP into one or more independent tree-structured CSPs and solve each of these separately.
