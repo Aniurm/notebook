@@ -32,10 +32,13 @@ nav:
         - course_notes/deep-learning/lrnn.md
         - course_notes/deep-learning/cnn.md
     - CS188:
+      - Lecture:
         - course_notes/cs188/lecture/1-Intro-to-AI.md
         - course_notes/cs188/lecture/2-Uninformed-Search.md
         - course_notes/cs188/lecture/3-Informed-Search.md
         - course_notes/cs188/lecture/4-CSPs.md
+      - Homework:
+        - course_notes/cs188/homework/hw1.md
   - 论文阅读:
     - X-NIC:
       - paper_read/virtio-linux-overview.md
