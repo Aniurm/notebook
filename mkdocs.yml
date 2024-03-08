@@ -37,6 +37,7 @@ nav:
         - course_notes/cs188/lecture/2-Uninformed-Search.md
         - course_notes/cs188/lecture/3-Informed-Search.md
         - course_notes/cs188/lecture/4-CSPs.md
+        - course_notes/cs188/lecture/6-Search-with-Other-Agents.md
       - Homework:
         - course_notes/cs188/homework/hw1.md
   - 论文阅读:
