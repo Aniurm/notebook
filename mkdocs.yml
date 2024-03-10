@@ -40,6 +40,7 @@ nav:
         - course_notes/cs188/lecture/6-Search-with-Other-Agents.md
       - Homework:
         - course_notes/cs188/homework/hw1.md
+        - course_notes/cs188/homework/hw2.md
   - 论文阅读:
     - X-NIC:
       - paper_read/virtio-linux-overview.md
