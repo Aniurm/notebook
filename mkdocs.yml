@@ -38,6 +38,7 @@ nav:
         - course_notes/cs188/lecture/Informed-Search.md
         - course_notes/cs188/lecture/CSPs.md
         - course_notes/cs188/lecture/Search-with-Other-Agents.md
+        - course_notes/cs188/lecture/MDPs.md
       - Homework:
         - course_notes/cs188/homework/hw1.md
         - course_notes/cs188/homework/hw2.md
