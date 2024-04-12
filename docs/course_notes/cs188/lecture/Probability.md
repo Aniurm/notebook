@@ -54,4 +54,17 @@ also known as an **assignment** of variables.
 
 ### Inference by Enumeration
 
+Given a joint PDF, we can trivially compute any desired probability distribution $P\left(Q_1 \ldots Q_m \mid e_1 \ldots e_n\right)$ using **inference by enumeration**, for which we define three types of variables:
 
+1. **Query variables** $Q_i$, which are unknown and appear on the left side of the conditional ($\mid$) in the 
+   desired probability distribution.
+2. **Evidence variables** $e_i$, which are observed variables whose values are known and appear on the right side of
+   the conditional ($\mid$) in the desired probability distribution.
+3. **Hidden variables**, which are values presents in the overall joint distribution but not in the desired
+   distribution.
+
+In Inference By Enumeration, we follow the following algorithm:
+
+1. Collect all the rows consistent with the observed evidence variables.
+2. Sum out (marginalize) all the hidden variables.
+3. Normalize the table so that it is a probability distribution (i.e. values sum to 1)
