@@ -43,6 +43,7 @@ nav:
         - course_notes/cs188/lecture/Probability.md
         - course_notes/cs188/lecture/BN-representation.md
         - course_notes/cs188/lecture/BN-Independence.md
+        - course_notes/cs188/lecture/BN-Inference.md
       - Project:
         - course_notes/cs188/project/Reinforcement Learning.md
       - Homework:
