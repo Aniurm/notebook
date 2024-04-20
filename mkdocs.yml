@@ -51,11 +51,10 @@ nav:
         - course_notes/cs188/homework/hw1.md
         - course_notes/cs188/homework/hw2.md
   - 论文阅读:
-    - X-NIC:
-      - paper_read/virtio-linux-overview.md
-      - paper_read/SR-IOV_Notes.md
-      - paper_read/Performance_Study_10GbE_NICs_SR-IOV.md
-      - paper_read/SR-IOV-KVM-Performance-Impact.md
+    - paper_read/virtio-linux-overview.md
+    - paper_read/SR-IOV_Notes.md
+    - paper_read/Performance_Study_10GbE_NICs_SR-IOV.md
+    - paper_read/SR-IOV-KVM-Performance-Impact.md
 
 markdown_extensions:
   - pymdownx.highlight:
