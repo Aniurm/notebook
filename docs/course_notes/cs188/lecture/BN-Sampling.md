@@ -67,4 +67,37 @@ if the variable is evidence.
 
 ### Gibbs Sampling
 
+!!! note 
+    **Gibbs Sampling** is a fourth approach for sampling. In this approach, we first set
+    all variables to some totally random values. 
+    
+    We then repeatedly pick one variable
+    at a time, clear its value, and resample it given the values currently assigned to
+    other variables.
+
+    If we repeat this process enough times, our later samples will eventually
+    converge to the correct distribution even though we may start from a
+    low-probability assignment of values.
+
+!!! quote ""
+    ![alt text](../img/gibbs-sampling.png){width=100%}
+
 ## Conclusion
+
+To summarize, **Bayesian Networks is a powerful representation of joint probability distributions**.
+**Its topological structure encodes independence and conditional independence relationships,
+and we can use it to model arbitrary distributions to perform inference and sampling**.
+
+We covered two approaches to probabilistic inference: exact inference and probabilistic inference (sampling).
+
+In exact inference, we are guaranteed the exact correct probability, but the amount of computation may be prohibitive:
+
+* Inference By Enumeration
+* Variable Elimination
+
+We can turn to sampling to approximate solutions while using less computation:
+
+* Prior Sampling
+* Rejection Sampling
+* Likelihood Weighting
+* Gibbs Sampling
