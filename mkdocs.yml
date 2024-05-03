@@ -46,6 +46,7 @@ nav:
         - course_notes/cs188/lecture/BN-Inference.md
         - course_notes/cs188/lecture/BN-Sampling.md
         - course_notes/cs188/lecture/Decision Networks & VPI.md
+        - course_notes/cs188/lecture/Hidden Markov Models.md
       - Project:
         - course_notes/cs188/project/Reinforcement Learning.md
       - Homework:
