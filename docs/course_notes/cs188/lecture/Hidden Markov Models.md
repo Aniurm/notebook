@@ -70,6 +70,73 @@ which can potentially affect the belief distribution at each of the states.
 
 ![alt text](../img/hidden-weather.png){width=100%}
 
+Unlike vanilla Markov models, we now have two different types of nodes:
+
+* $W_i$: **state variable**.
+* $F_i$: **evidence variable**.
+
+$$
+\begin{array}{lll}
+F_1 & \indep W_0 \mid W_1 & \\
+\forall i & =2, \ldots, n ; & W_i \indep \left\{W_0, \ldots, W_{i-2}, F_1, \ldots, F_{i-1}\right\} \mid W_{i-1} \\
+\forall i & =2, \ldots, n ; & F_i \indep \left\{W_0, \ldots, W_{i-1}, F_1, \ldots, F_{i-1}\right\} \mid W_i
+\end{array}
+$$
+
+
+Hidden Markov Models make the following assumptions:
+
+* The transition model $P\left(W_{i+1} \mid W_i\right)$ is stationary.
+* The **sensor model** $P\left(F_i \mid W_i\right)$ is also stationary.
+
+#### Believe Distribution
+
+All evidence $F_1, \ldots, F_i$ is observed up to date:
+
+$$
+B\left(W_i\right)=P\left(W_i \mid f_1, \ldots, f_i\right)
+$$
+
+Evidence $f_1, \ldots, f_{i-1}$ is observed:
+
+$$
+B'\left(W_i\right)=P\left(W_i \mid f_1, \ldots, f_{i-1}\right)
+$$
+
+Defining $e_i$ as evidence observed at timestep $i$, you might see the aggregated evidence from timesteps $1 \leq i \leq t$ reexpressed in the form:
+
+$$
+e_{1: t}=e_1, \ldots, e_t
+$$
+
 ### The Forward Algorithm
 
+Relationship between $B\left(W_i\right)$ and $B'\left(W_{i + 1}\right)$:
+
+$$
+B^{\prime}\left(W_{i+1}\right)=\sum_{w_i} P\left(W_{i+1} \mid w_i\right) B\left(w_i\right)
+$$
+
+Relationship between $B'\left(W_{i+1}\right)$ and $B\left(W_{i+1}\right)$:
+
+$$
+B\left(W_{i+1}\right) \propto P\left(f_{i+1} \mid W_{i+1}\right) B^{\prime}\left(W_{i+1}\right)
+$$
+
+Combining the two relationships we've just derived yields an iterative algorithm known as the **forward algorithm**, the Hidden Markov Model analog of the mini-forward algorithm from earlier:
+
+$$
+B\left(W_{i+1}\right) \propto P\left(f_{i+1} \mid W_{i+1}\right) \sum_{w_i} P\left(W_{i+1} \mid w_i\right) B\left(w_i\right)
+$$
+
+The forward algorithm can be thought of as consisting of two distinctive steps:
+
+1. **Time elapse update**: determining $B'\left(W_{i+1}\right)$ from $B\left(W_i\right)$.
+2. **Observation update**: determining $B\left(W_{i+1}\right)$ from $B'\left(W_{i+1}\right)$.
+
 ### Viterbi Algorithm
+
+!!! question "$\arg \max _{x_{1: N}} P\left(x_{1: N} \mid e_{1: N}\right)$"
+    What is the most likely sequence of hidden states the system followed given
+    the observed evidence variables so far?
+
