@@ -47,6 +47,7 @@ nav:
         - course_notes/cs188/lecture/BN-Sampling.md
         - course_notes/cs188/lecture/Decision Networks & VPI.md
         - course_notes/cs188/lecture/Hidden Markov Models.md
+        - course_notes/cs188/lecture/Particle Filtering.md
       - Project:
         - course_notes/cs188/project/Reinforcement Learning.md
       - Homework:
