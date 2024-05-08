@@ -89,6 +89,37 @@ $$
 
 #### Parameter Estimation
 
+Assume you have a set of N **sample points** or **observations**, $x_1, \ldots, x_N$, and
+you believe that this data was drawn from a distribution **parameterized** by
+an unknown value $\theta$.
+
+How can you "learn" the most likely value of $\theta$ given your sample?
+
+A frequently used and fundamental method in machine learning known as **Maximum Likelihood Estimation** (MLE) does exactly this.
+
+Maximum likelihood estimation typically makes the following simplifying assumptions:
+
+* Each sample is drawn from the same distribution.
+* Each sample $x_i$ is conditionally **independent** of the others, given the parameters
+for our distribution. In the coin flipping example, the outcome of one flip does not affect any of the others.
+* All possible values of $\theta$ are equally likely before observing the data. This is known as a **uniform prior**.
+
+The first two assumptions are often referred to as **independent, identically distributed (i.i.d.)**.
+
+The **likelihood** $\mathscr{L}(\theta)$ of our sample, a function which represents the probability of having drawn our sample from our distribution. For a fixed sample $x_1, x_N$, the likelihood is just a function of $\theta$ :
+
+$$
+\mathscr{L}(\theta)=P_\theta\left(x_1, \ldots, x_N\right)
+$$
+
+Using our simplifying assumption that the samples $x_i$ are i.i.d., the likelihood function can be re-expressed as follows:
+
+$$
+\mathscr{L}(\theta)=\prod_{i=1}^N P_\theta\left(x_i\right)
+$$
+
 ##### Maximum Likelihood for Naive Bayes
+
+
 
 ##### Smoothing
