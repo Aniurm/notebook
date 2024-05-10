@@ -49,6 +49,7 @@ nav:
         - course_notes/cs188/lecture/Hidden Markov Models.md
         - course_notes/cs188/lecture/Particle Filtering.md
         - course_notes/cs188/lecture/ML-Naive Bayes.md
+        - course_notes/cs188/lecture/ML-Perceptrons.md
       - Project:
         - course_notes/cs188/project/Reinforcement Learning.md
       - Homework:
