@@ -118,8 +118,82 @@ $$
 \mathscr{L}(\theta)=\prod_{i=1}^N P_\theta\left(x_i\right)
 $$
 
+The maximum likelihood estimate for $\theta$ is a value that satisfies the following:
+
+$$
+\frac{\partial}{\partial \theta} \mathscr{L}(\theta)=0
+$$
+
 ##### Maximum Likelihood for Naive Bayes
 
+Let’s now return to the problem of inferring conditional probability tables for our spam classifier.
 
+For simplicity, let's specifically consider $P\left(F_i \mid Y=\right.$ ham $)$ and try to find the maximum likelihood estimate for a parameter $\theta=P\left(F_i=1 \mid Y=h a m\right)$ i.e. the probability that the $i^{t h}$ word in our dictionary appears in a ham email. 
+
+($f_i^{(j)}$ is 1 if the $i^{t h}$ word in the $j^{t h}$ email is present, and 0 otherwise.)
+
+$$
+\mathscr{L}(\theta)=\prod_{j=1}^{N_h} P\left(F_i=f_i^{(j)} \mid Y=h a m\right)=\prod_{j=1}^{N_h} \theta^{f_i^{(j)}}(1-\theta)^{1-f_i^{(j)}}
+$$
+
+Because $\log$ is a monotonic function, maximizing the likelihood is equivalent to maximizing the log likelihood:
+
+$$
+\begin{aligned}
+\log \mathscr{L}(\theta) & =\log \left(\prod_{j=1}^{N_h} \theta^{f_i^{(j)}}(1-\theta)^{1-f_i^{(j)}}\right) \\
+& =\log (\theta) \sum_{j=1}^{N_h} f_i^{(j)}+\log (1-\theta) \sum_{j=1}^{N_h}\left(1-f_i^{(j)}\right)
+\end{aligned}
+$$
+
+$$
+\frac{\partial}{\partial \theta}\left(\log (\theta) \sum_{j=1}^{N_h} f_i^{(j)}+\log (1-\theta) \sum_{j=1}^{N_h}\left(1-f_i^{(j)}\right)\right)=0
+$$
+
+$$
+\theta=\frac{1}{N_h} \sum_{j=1}^{N_h} f_i^{(j)}
+$$
+
+According to our formula above, the maximum likelihood estimate for $\theta$ (which, 
+remember, is the probability that $P\left(F_i=1 \mid Y=h a m\right)$) corresponds to counting the number of ham emails in which word i appears and dividing it by the total number of ham emails. 
 
 ##### Smoothing
+
+!!! warning
+    Though maximum likelihood estimation is a very powerful method for parameter estimation, bad training data can often lead to unfortunate consequences.
+
+For example, if every time the word “minute” appears in an email in our training set, that email is classified as spam, our trained model will learn that
+
+$$
+P\left(F_{\text {minute}}=1 \mid Y=\text {ham}\right)=0
+$$
+
+Hence 
+your model will never classify any email containing the word minute as ham.
+
+This is a classic example of **overfitting**, or building a model that doesn’t generalize well to previously unseen data.
+
+Overfitting with Naive Bayes’ classifiers can be mitigated by **Laplace Smoothing**.
+Conceptually, Laplace smoothing with strength $k$ assumes having seen $k$ 
+extra of each outcome. Hence if for a given sample your maximum likelihood estimate for an outcome $x$ that can take on $|X|$ different values from a sample of size $N$ is:
+
+$$
+P_{M L E}(x)=\frac{\operatorname{count}(x)}{N}
+$$
+
+then the Laplace estimate with strength $k$ is
+
+$$
+P_{L A P, k}(x)=\frac{\operatorname{count}(x)+k}{N+k|X|}
+$$
+
+There are two particularly notable cases for Laplace smoothing.
+When $k = 0$, Laplace smoothing is equivalent to maximum likelihood estimation.
+When $k = \infty$:
+
+$$
+P_{L A P, \infty}(x)=\frac{1}{|X|}
+$$
+
+The specific value of $k$ that’s appropriate to use in your model is typically determined by trial-and-error. **$k$ is a hyperparameter in your model, which means that you can
+set it to whatever you want and see which value yields the best prediction
+accuracy/performance on your validation set.**
