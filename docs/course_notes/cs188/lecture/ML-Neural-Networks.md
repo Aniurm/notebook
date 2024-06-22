@@ -65,7 +65,38 @@ This expression denotes the likelihood of a particular set of weights explaining
 
 ### Multi-layer Feedforward Neural Networks
 
+!!! note
+    This is much like the multi-layer perceptron, however, we choose a different non-linearity to apply after the individual perceptron nodes. Note that it is these **added non-linearities that makes the network as a whole non-linear and more expressive**.
+
+#### Sigmoid Function
+
+$$
+\sigma(x)=\frac{1}{1+e^{-x}}
+$$
+
+![alt text](../img/sigmoid.png){width=100%}
+
+#### Rectified Linear Unit (ReLU)
+
+$$
+f(x)= \begin{cases}0 & \text { if } x<0 \\ x & \text { if } x \geq 0\end{cases}
+$$
+
+![alt text](../img/relu.png){width=100%}
+
+The choice of nonlinearity is a design choice that typically requires some experimentation to select a good one for each individual use case.
+
+$$
+\nabla_w \ell(\mathbf{w})=\left[\frac{\partial \ell \ell(\mathbf{w})}{\partial \mathbf{w}_1}, \ldots, \frac{\partial \ell \ell(\mathbf{w})}{\partial \mathbf{w}_n}\right]
+$$
+
 ### Loss Functions and Multivariate Optimization
+
+$$
+\nabla_w \ell(\mathbf{w})=\left[\frac{\partial \ell \ell(\mathbf{w})}{\partial \mathbf{w}_1}, \ldots, \frac{\partial \ell \ell(\mathbf{w})}{\partial \mathbf{w}_n}\right]
+$$
+
+We can find the optimal values of the parameters using the gradient ascent method described earlier.
 
 ## Neural Networks: Backpropagation
 
