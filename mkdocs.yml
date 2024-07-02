@@ -32,7 +32,8 @@ nav:
         - course_notes/deep-learning/lrnn.md
         - course_notes/deep-learning/cnn.md
     - CS144:
-      - course_notes/cs144/img/lab0.md
+      - course_notes/cs144/lab0.md
+      - course_notes/cs144/lab1.md
     - CS188:
       - Lecture:
         - course_notes/cs188/lecture/Intro-to-AI.md
