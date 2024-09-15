@@ -54,16 +54,64 @@ Consider the byte stream `cat`:
 | absolute seqno |     0      |     1      |   2   |   3   |   4   |
 |   stream index |            |     0      |   1   |   2   |       |
 
-The figure shows the three different types of indexing involved in TCP:
+在这些不同的index之间转换比较tricky，所以引入了一个新的type `Wrap32`，用来表示sequence 
+number，同时提供一些转换函数。
 
-| Sequence Numbers  | Absolute Sequence Numbers | Stream Indices        |
-| :---------------- | :------------------------ | :-------------------- |
-| Start at the ISN  | Start at 0                | Start at 0            |
-| Include SYN/FIN   | Include SYN/FIN           | Omit SYN/FIN          |
-| 32 bits, wrapping | 64 bits, non-wrapping     | 64 bits, non-wrapping |
-| "seqno"           | "absolute seqno"          | "stream index"        |
+1. `static Wrap32 Wrap32::wrap( uint64 t n, Wrap32 zero point )`
+      1. 给定absolute sequence number和“零点”，返回一个Wrap32 object(表示sequence number)。
+      2. 将absolute sequence number与零点相加后取模就行。
+2. `uint64 t unwrap( Wrap32 zero point, uint64 t checkpoint ) const`
+      1. 给定一个“零点”和一个checkpoint，将sequence number转化为absolute sequence number。
+      2. 因为sequence number是“取模”后的结果，所以有几个可能的值，选择一个最接近checkpoint的值。
 
-Converting between sequence numbers and absolute sequence numbers is tricky.
-To prevent these bugs systematically, we’ll represent sequence numbers with a custom type: `Wrap32`, and write the conversions between it and absolute sequence numbers (represented with `uint64_t`).
+### Implementing the TCPReceiver
 
-`Wrap32` is an example of a *wrapper* *type*: a type that contains an inner type (in this case `uint32_t`) but provides a different set of functions/operators.
+TCPReceiver要干嘛？
+
+1. receive messages from its peer’s sender and reassemble the `ByteStream` using a `Reassembler`.
+      1. 它收到的message be like:
+
+        ```cpp
+        struct TCPSenderMessage
+        {
+            Wrap32 seqno { 0 };
+
+            bool SYN {};
+            std::string payload {};
+            bool FIN {};
+
+            bool RST {};
+
+            // How many sequence numbers does this segment use?
+            size_t sequence_length() const { return SYN + payload.size() + FIN; }
+        };
+        ```
+
+2. send messages back to the peer’s sender that contain the acknowledgment number (ackno) and window size.
+
+      1. 它发送回去的message be like:
+
+        ```cpp
+        struct TCPReceiverMessage
+        {
+            std::optional<Wrap32> ackno {};
+            uint16_t window_size {};
+            bool RST {};
+        };
+        ```
+
+那么我们要implement的实际上是`TCPReceiver`的`receive`和`send`方法。
+
+* `receive()`
+    * 接受`TCPSenderMessage`，将sequence number转化为stream index，然后调用`Reassembler`的`insert`方法。
+* `send()`
+    * 生成`TCPReceiverMessage`，包含ackno和window size。
+
+当然还有一些edge cases，比如：收到`RST`，收到`FIN`等等，会涉及一些index的tricky细节，不再赘述。
+
+因为“重组乱序的字节流”这个问题在Reassembler中已经解决了，所以在TCPReceiver解决的问题
+主要是“各种index之间的转换”，难度并不大，但是edge cases比较多。
+
+一些我觉得有趣的小细节：在本次实验中，每一次`receive()`之后都会调用`send()`，将ackno和window size发送回去。
+但是在实际的TCP协议中，会有一些优化，用于减少网络中的 ACK 包数量，提高带宽利用率，如：
+Delayed ACK（使用一个 ACK 来确认多个数据段）、Piggybacking（将 ACK 放在数据包中）等等。
