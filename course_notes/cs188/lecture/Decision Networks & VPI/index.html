@@ -1,0 +1,2203 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../BN-Sampling/">
+      
+      
+        <link rel="next" href="../Hidden%20Markov%20Models/">
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+    
+    
+      
+        <title>Decision Networks & VPI - Aniurm's Notebook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.35f28582.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto Mono";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../css/extra.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#decision-networks-vpi" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Aniurm&#39;s Notebook" class="md-header__button md-logo" aria-label="Aniurm's Notebook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Aniurm's Notebook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Decision Networks &amp; VPI
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Aniurm&#39;s Notebook" class="md-nav__button md-logo" aria-label="Aniurm's Notebook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Aniurm's Notebook
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    课程笔记
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            课程笔记
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    MIT6.S081
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            MIT6.S081
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1_1" id="__nav_2_1_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Labs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            Labs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mitos/lab/trap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    traps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mitos/lab/lazy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    xv6 lazy page allocation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mitos/lab/cow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Copy-on-Write Fork
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mitos/lab/thread/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Multithreading
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mitos/lab/locks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    locks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mitos/lab/fs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    file system
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mitos/lab/mmap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    CMU15-445/645
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            CMU15-445/645
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cmu15445/primer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C++ PRIMER
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cmu15445/buffer-pool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BUFFER POOL
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cmu15445/hash-index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EXTENDIBLE HASH INDEX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    集成电路
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            集成电路
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ic/mos-physic/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MOS器件物理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ic/mos-small-signal/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MOS小信号模型
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ic/single-stage-amp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Single Stage Amplifiers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    深度学习
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            深度学习
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deep-learning/lrnn/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logistic Regression as a Neural Network
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deep-learning/cnn/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Convolutional Neural Networks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    CS144
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            CS144
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs144/lab0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lab 0: networking warmup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs144/lab1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lab 1: stitching substrings into a byte stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs144/lab2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lab 2: the TCP receiver
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs144/lab3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lab3: the TCP sender
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    CS188
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            CS188
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_6_1" id="__nav_2_6_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Lecture
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_6_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            Lecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Intro-to-AI/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Intro to AI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Uninformed-Search/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uninformed Search
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Informed-Search/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Informed Search
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CSPs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Constraint Satisfaction Problems
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Search-with-Other-Agents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Search with Other Agents
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MDPs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Markov Decision Processes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RL/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Reinforcement Learning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Probability/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Probability
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BN-representation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BN: Representation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BN-Independence/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BN: Independence
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BN-Inference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BN: Inference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BN-Sampling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BN: Sampling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Decision Networks &amp; VPI
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Decision Networks &amp; VPI
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#utility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Utility
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Utility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-mathematical-language-of-preferences" class="md-nav__link">
+    <span class="md-ellipsis">
+      The mathematical language of preferences
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#five-axioms-of-rationality" class="md-nav__link">
+    <span class="md-ellipsis">
+      Five Axioms of Rationality
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-networks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision Networks
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decision Networks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outcome-trees" class="md-nav__link">
+    <span class="md-ellipsis">
+      Outcome Trees
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-value-of-perfect-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Value of Perfect Information
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Value of Perfect Information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      General Formula
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#properties-of-vpi" class="md-nav__link">
+    <span class="md-ellipsis">
+      Properties of VPI
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Hidden%20Markov%20Models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hidden Markov Models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Particle%20Filtering/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Particle Filtering
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ML-Naive%20Bayes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ML: Naive Bayes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ML-Perceptrons/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ML: Perceptrons
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ML-Logistic-Regression/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ML: Logistic Regression
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ML-Optimization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ML: Optimization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ML-Neural-Networks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ML: Neural Networks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6_2" id="__nav_2_6_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Project
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            Project
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/Reinforcement%20Learning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Project 3: Reinforcement Learning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6_3" id="__nav_2_6_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Homework
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            Homework
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../homework/hw1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HW1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../homework/hw2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HW2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    论文阅读
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            论文阅读
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../paper_read/virtio-linux-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    virtio: Towards a De-Facto Standard For Virtual I/O Devices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../paper_read/SR-IOV_Notes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    High performance network virtualization with SR-IOV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../paper_read/Performance_Study_10GbE_NICs_SR-IOV/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Evaluating Standard-Based Self-Virtualizing Devices: A Performance Study of 10GbE NICs with SR-IOV Support
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../paper_read/SR-IOV-KVM-Performance-Impact/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Measuring the impact of SR-IOV and virtualization on packet round-trip time
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#utility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Utility
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Utility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-mathematical-language-of-preferences" class="md-nav__link">
+    <span class="md-ellipsis">
+      The mathematical language of preferences
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#five-axioms-of-rationality" class="md-nav__link">
+    <span class="md-ellipsis">
+      Five Axioms of Rationality
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-networks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision Networks
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decision Networks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outcome-trees" class="md-nav__link">
+    <span class="md-ellipsis">
+      Outcome Trees
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-value-of-perfect-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Value of Perfect Information
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Value of Perfect Information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      General Formula
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#properties-of-vpi" class="md-nav__link">
+    <span class="md-ellipsis">
+      Properties of VPI
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="decision-networks-vpi">Decision Networks &amp; VPI</h1>
+<h2 id="utility">Utility</h2>
+<h3 id="the-mathematical-language-of-preferences">The mathematical language of preferences</h3>
+<ul>
+<li>If an agent prefers receiving a prize A to receiving a prize B, this is written <span class="arithmatex">\(A \succ B\)</span>.</li>
+<li>If an agent is indifferent between receiving A or B, this is written as <span class="arithmatex">\(A \sim B\)</span>.</li>
+<li>A <strong>lottery</strong> is a situation with different prizes resulting with different probabilities.</li>
+</ul>
+<div class="arithmatex">\[
+L=[p, A ;(1-p), B]
+\]</div>
+<p>In order for a set of preferences to be rational, they must follow the five <strong>Axioms of Rationality</strong>:</p>
+<h3 id="five-axioms-of-rationality">Five Axioms of Rationality</h3>
+<ul>
+<li>
+<p><em>Orderability</em>: <span class="arithmatex">\((A \succ B) \vee(B \succ A) \vee(A \sim B)\)</span></p>
+<p>A rational agent must either prefer one of A or B, or be indifferent between the two.</p>
+</li>
+<li>
+<p><em>Transitivity</em>: <span class="arithmatex">\((A \succ B) \wedge(B \succ C) \Rightarrow(A \succ C)\)</span></p>
+</li>
+<li>
+<p><em>Continuity</em>: <span class="arithmatex">\(A \succ B \succ C \Rightarrow \exists p \ [p, A ;(1-p), C] \sim B\)</span></p>
+<p>If a rational agent prefers <span class="arithmatex">\(A\)</span> to <span class="arithmatex">\(B\)</span> but <span class="arithmatex">\(B\)</span> to <span class="arithmatex">\(C\)</span>, then it's possible to construct a lottery <span class="arithmatex">\(L\)</span> between <span class="arithmatex">\(A\)</span> and <span class="arithmatex">\(C\)</span> such that the agent is indifferent between <span class="arithmatex">\(L\)</span> and <span class="arithmatex">\(B\)</span> with appropriate selection of <span class="arithmatex">\(p\)</span>.</p>
+</li>
+<li>
+<p><em>Substitutability</em>: <span class="arithmatex">\(A \sim B \Rightarrow[p, A ;(1-p), C] \sim[p, B ;(1-p), C]\)</span></p>
+</li>
+<li>
+<p><em>Monotonicity</em>: <span class="arithmatex">\(A \succ B \Rightarrow(p \geq q) \Leftrightarrow[p, A ;(1-p), B] \succeq[q, A ;(1-q), B]\)</span></p>
+<p>If a rational agent prefers <span class="arithmatex">\(A\)</span> over <span class="arithmatex">\(B\)</span>, then given a choice between lotteries involving only <span class="arithmatex">\(A\)</span> and <span class="arithmatex">\(B\)</span>, the agent prefers the lottery assigning the highest probability to <span class="arithmatex">\(A\)</span>.</p>
+</li>
+</ul>
+<p>If all five axioms are satisfied by an agent, then it’s guaranteed that the agent’s behavior is describable as a maximization of expected utility.</p>
+<div class="arithmatex">\[
+\begin{aligned}
+U(A) \geq U(B) &amp; \Leftrightarrow A \succeq B \\
+U\left(\left[p_1, S_1 ; \ldots ; p_n, S_n\right]\right) &amp; =\sum_i p_i U\left(S_i\right)
+\end{aligned}
+\]</div>
+<h3 id="example">Example</h3>
+<p>Consider the following lottery:</p>
+<div class="arithmatex">\[
+L=[0.5, \$ 0 ; 0.5, \$ 1000]
+\]</div>
+<p>This represents a lottery where you receive <span class="arithmatex">\(\$ 1000\)</span> with probability 0.5 and <span class="arithmatex">\(\$ 0\)</span> with probability 0.5 . </p>
+<p>Now consider three agents <span class="arithmatex">\(A_1, A_2\)</span>, and <span class="arithmatex">\(A_3\)</span> which have utility functions <span class="arithmatex">\(U_1(\$ x)=x, U_2(\$ x)=\sqrt{x}\)</span>, and <span class="arithmatex">\(U_3(\$ x)=x^2\)</span> respectively. If each of the three agents were faced with a choice between participating in the lottery and receiving a flat payment of <span class="arithmatex">\(\$ 500\)</span>, which would they choose? </p>
+<p>The respective utilities for each agent of participating in the lottery and accepting the flat payment are listed in the following table:</p>
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Lottery</th>
+<th>Flat Payment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>500</td>
+<td>500</td>
+</tr>
+<tr>
+<td>2</td>
+<td>15.81</td>
+<td>22.36</td>
+</tr>
+<tr>
+<td>3</td>
+<td>500000</td>
+<td>250000</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Agent <span class="arithmatex">\(A_1\)</span> is indifferent between participating in the lottery and receiving the flat payment (the utilities for both cases are identical). Such an agent is known as <strong>risk-neutral</strong>. </li>
+<li><span class="arithmatex">\(A_2\)</span> prefers the flat payment to the lottery and is <strong>risk-averse</strong>.</li>
+<li><span class="arithmatex">\(A_3\)</span> prefers the lottery to the flat payment and is <strong>risk-seeking</strong>.</li>
+</ul>
+<h2 id="decision-networks">Decision Networks</h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Now we’ll discuss a combination of both Bayes’ nets and expectimax known as a <strong>decision network</strong> that we can use to model the effect of various actions on utilities based on an overarching graphical probabilistic model.</p>
+</div>
+<ul>
+<li><strong>Chance nodes</strong>: Each outcome in a chance node has an associated probability, which can be determined by running inference on the underlying Bayes’ net it belongs to.</li>
+<li><strong>Action nodes</strong>: Representing a choice between any of a number of actions which we have the power to choose from.</li>
+<li><strong>Utility nodes</strong>: Output a utility based on the values taken on by their parents.</li>
+</ul>
+<p>Our goal with decision networks is again to select the action which yields the <strong>maximum expected utility</strong> (MEU):</p>
+<ul>
+<li>Start by instantiating all evidence that’s known, and run inference to calculate the posterior probabilities.</li>
+<li>Go through each possible action and compute the expected utility of taking that action given the posterior probabilities computed in the previous step.
+    $$
+    E U(a \mid e)=\sum_{x_1, \ldots, x_n} P\left(x_1, \ldots, x_n \mid e\right) U\left(a, x_1, \ldots, x_n\right)
+    $$</li>
+<li>Select the action which yielded the highest utility to get the MEU.</li>
+</ul>
+<h3 id="example_1">Example</h3>
+<p><img alt="alt text" src="../../img/decision-networks.png" width="70%" /></p>
+<div class="arithmatex">\[
+\begin{aligned}
+E U(\text { leave } \mid \text { bad }) &amp; =\sum_w P(w \mid \text { bad }) U(\text { leave }, w) \\
+&amp; =0.34 \cdot 100+0.66 \cdot 0=34 \\
+E U(\text { take } \mid \mathrm{bad}) &amp; =\sum_w P(w \mid \text { bad }) U(\text { take }, w) \\
+&amp; =0.34 \cdot 20+0.66 \cdot 70=53
+\end{aligned}
+\]</div>
+<p>All that's left to do is take the maximum over these computed utilities to determine the MEU:
+$$
+\operatorname{MEU}(F=\mathrm{bad})=\max _a E U(a \mid \mathrm{bad})=53
+$$</p>
+<p>The action that yields the maximum expected utility is <em>take</em>.</p>
+<h3 id="outcome-trees">Outcome Trees</h3>
+<p><img alt="alt text" src="../../img/outcome-tree.png" /></p>
+<h2 id="the-value-of-perfect-information">The Value of Perfect Information</h2>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>One of the most important parts of decision making is knowing whether or not it’s worth
+gathering more evidence to help decide which action to take. </p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">The Value of Perfect Information (VPI)</p>
+<p>Mathematically quantifies the amount of an agent's maximum expected utility is 
+expected to increase if it observes some new evidence.</p>
+</div>
+<h3 id="general-formula">General Formula</h3>
+<p>We know our current maximum utility given our current evidence <span class="arithmatex">\(e\)</span>:</p>
+<div class="arithmatex">\[
+\operatorname{MEU}(e)=\max _a \sum_s P(s \mid e) U(s, a)
+\]</div>
+<p>Additionally, we know that if we observed some new evidence <span class="arithmatex">\(e^{\prime}\)</span> before acting, the MEU of our action at that point would become</p>
+<div class="arithmatex">\[
+\operatorname{MEU}\left(e, e^{\prime}\right)=\max _a \sum_s P\left(s \mid e, e^{\prime}\right) U(s, a)
+\]</div>
+<p>However, note that <strong>we don't know what new evidence we'll get</strong>. For example, if we didn't know the weather forecast beforehand and chose to observe it, the forecast we observe might be either good or bad. Because we don't know what what new evidence <span class="arithmatex">\(e^{\prime}\)</span> we'll get, we must represent it as a random variable <span class="arithmatex">\(E^{\prime}\)</span>. How do we represent the new MEU we'll get if we choose to observe a new variable if we don't know what the evidence gained from observation will tell us? The answer is to compute the expected value of the maximum expected utility which, while being a mouthful, is the natural way to go:</p>
+<div class="arithmatex">\[
+\operatorname{MEU}\left(e, E^{\prime}\right)=\sum_{e^{\prime}} P\left(e^{\prime} \mid e\right) M E U\left(e, e^{\prime}\right)
+\]</div>
+<p>Returning to our definition for VPI, we want to find the amount our MEU is expected to increase if we choose to observe the new evidence <span class="arithmatex">\(E^{\prime}\)</span>:</p>
+<div class="arithmatex">\[
+V P I(E^{\prime} \mid e)= \operatorname{MEU}(e, E^{\prime})-\operatorname{MEU}(e)
+\]</div>
+<h3 id="properties-of-vpi">Properties of VPI</h3>
+<ul>
+<li><strong>Nonnegativity</strong>: <span class="arithmatex">\(\forall E^{\prime}, e \quad V P I(E^{\prime} \mid e) \geq 0\)</span></li>
+<li><strong>Nonadditivity</strong>: <span class="arithmatex">\(V P I\left(E_j, E_k \mid e\right) \neq V P I\left(E_j \mid e\right)+V P I\left(E_k \mid e\right)\)</span>
+    Generally  observing some new evidence <span class="arithmatex">\(E_j\)</span> might change how much we care about
+    <span class="arithmatex">\(E_k\)</span>; therefore we can't simply add</li>
+<li><strong>Order-independence</strong>: <span class="arithmatex">\(V P I\left(E_j, E_k \mid e\right)=V P I\left(E_j \mid e\right)+V P I\left(E_k \mid e, E_j\right)=V P I\left(E_k \mid e\right)+V P I\left(E_j \mid e, E_k\right)\)</span>
+    Observing multiple new evidences yields the same gain in maximum expected utility regardless of the order of observation.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": ["content.code.select"], "search": "../../../../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.56dfad97.min.js"></script>
+      
+        <script src="../../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2077 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../primer/">
+      
+      
+        <link rel="next" href="../hash-index/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+    
+    
+      
+        <title>BUFFER POOL - Aniurm's Notebook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.35f28582.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto Mono";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../css/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#buffer-pool" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Aniurm&#39;s Notebook" class="md-header__button md-logo" aria-label="Aniurm's Notebook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Aniurm's Notebook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              BUFFER POOL
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Aniurm&#39;s Notebook" class="md-nav__button md-logo" aria-label="Aniurm's Notebook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Aniurm's Notebook
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    课程笔记
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            课程笔记
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    MIT6.S081
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            MIT6.S081
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1_1" id="__nav_2_1_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Labs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            Labs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mitos/lab/trap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    traps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mitos/lab/lazy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    xv6 lazy page allocation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mitos/lab/cow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Copy-on-Write Fork
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mitos/lab/thread/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Multithreading
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mitos/lab/locks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    locks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mitos/lab/fs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    file system
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mitos/lab/mmap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    CMU15-445/645
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            CMU15-445/645
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../primer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C++ PRIMER
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    BUFFER POOL
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    BUFFER POOL
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-1-lru-k-replacement-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task #1 - LRU-K Replacement Policy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-2-disk-scheduler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task #2 - Disk Scheduler
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task #2 - Disk Scheduler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disk-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      Disk Manager
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-3-buffer-pool-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task #3 - Buffer Pool Manager
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hash-index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EXTENDIBLE HASH INDEX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    集成电路
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            集成电路
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ic/mos-physic/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MOS器件物理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ic/mos-small-signal/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MOS小信号模型
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ic/single-stage-amp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Single Stage Amplifiers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    深度学习
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            深度学习
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deep-learning/lrnn/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logistic Regression as a Neural Network
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deep-learning/cnn/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Convolutional Neural Networks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    CS144
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            CS144
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs144/lab0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lab 0: networking warmup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs144/lab1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lab 1: stitching substrings into a byte stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs144/lab2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lab 2: the TCP receiver
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs144/lab3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lab3: the TCP sender
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    CS188
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            CS188
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6_1" id="__nav_2_6_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Lecture
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            Lecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/Intro-to-AI/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Intro to AI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/Uninformed-Search/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uninformed Search
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/Informed-Search/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Informed Search
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/CSPs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Constraint Satisfaction Problems
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/Search-with-Other-Agents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Search with Other Agents
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/MDPs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Markov Decision Processes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/RL/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Reinforcement Learning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/Probability/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Probability
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/BN-representation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BN: Representation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/BN-Independence/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BN: Independence
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/BN-Inference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BN: Inference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/BN-Sampling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BN: Sampling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/Decision%20Networks%20%26%20VPI/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Decision Networks &amp; VPI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/Hidden%20Markov%20Models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hidden Markov Models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/Particle%20Filtering/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Particle Filtering
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/ML-Naive%20Bayes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ML: Naive Bayes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/ML-Perceptrons/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ML: Perceptrons
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/ML-Logistic-Regression/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ML: Logistic Regression
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/ML-Optimization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ML: Optimization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/lecture/ML-Neural-Networks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ML: Neural Networks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6_2" id="__nav_2_6_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Project
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            Project
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/project/Reinforcement%20Learning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Project 3: Reinforcement Learning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6_3" id="__nav_2_6_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Homework
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            Homework
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/homework/hw1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HW1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cs188/homework/hw2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HW2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    论文阅读
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            论文阅读
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../paper_read/virtio-linux-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    virtio: Towards a De-Facto Standard For Virtual I/O Devices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../paper_read/SR-IOV_Notes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    High performance network virtualization with SR-IOV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../paper_read/Performance_Study_10GbE_NICs_SR-IOV/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Evaluating Standard-Based Self-Virtualizing Devices: A Performance Study of 10GbE NICs with SR-IOV Support
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../paper_read/SR-IOV-KVM-Performance-Impact/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Measuring the impact of SR-IOV and virtualization on packet round-trip time
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-1-lru-k-replacement-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task #1 - LRU-K Replacement Policy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-2-disk-scheduler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task #2 - Disk Scheduler
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task #2 - Disk Scheduler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disk-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      Disk Manager
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-3-buffer-pool-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task #3 - Buffer Pool Manager
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="buffer-pool">BUFFER POOL</h1>
+<h2 id="overview">Overview</h2>
+<p>The buffer pool is responsible for <strong>moving physical pages back and forth from main memory to disk</strong>. It allows a DBMS to support databases that are larger than the amount of memory available to the system. The buffer pool's operations are <strong>transparent to other parts</strong> in the system. （这里的transparent应该理解为“未察觉的，未认识到的”）</p>
+<p><strong>Your implementation will need to be thread-safe.</strong></p>
+<h2 id="task-1-lru-k-replacement-policy">Task #1 - LRU-K Replacement Policy</h2>
+<p>借助GPT，我才勉强理解LRU-K。LRU-K算法是一种页面置换算法，用于计算机缓存中决定哪个页面应该被替换。在这个算法中，"K"代表一个数字，意味着算法会考虑到页面被访问的最后K次记录。<strong>Backward k-distance是从现在开始往前数，第k次访问此页面点时间与现在的时间差。</strong></p>
+<p>当一个页面的访问次数不足K次时，它的向后k距离就被认为是无限大（+inf）。这样做是因为算法至少需要K次访问记录来计算一个页面的向后k距离，不足K次就意味着没有足够的信息来决定它的重要程度。</p>
+<p>当算法需要替换一个页面时，它会选择向后k距离最大的页面。如果有多个页面的向后k距离都是无限大（也就是说，这些页面的访问次数都不足K次），那么算法会选择最早被访问的页面（“最早被访问”指第一次被访问的时间最早）。</p>
+<div class="admonition note">
+<p class="admonition-title">LRU-K Replacement Policy</p>
+<p>You will need to implement the following methods:</p>
+<ul>
+<li><code>Evict(frame_id_t* frame_id)</code> : Evict the frame with largest backward k-distance compared to all other evictable frames being tracked by the Replacer. </li>
+<li><code>RecordAccess(frame_id_t frame_id)</code> : Record that given frame id is accessed at current timestamp. </li>
+<li><code>Remove(frame_id_t frame_id)</code> : Clear all access history associated with a frame. </li>
+<li><code>SetEvictable(frame_id_t frame_id, bool set_evictable)</code> : This method controls whether a frame is evictable or not. It also controls LRUKReplacer's size. </li>
+<li><code>Size()</code> : This method returns the number of evictable frames that are currently in the LRUKReplacer.</li>
+</ul>
+</div>
+<p>我使用的数据结构：两个<code>std::list&lt;frame_id_t&gt;</code>，分别用于保存访问次数小于、大于K的frame_id。<code>std::unordered_map&lt;frame_id_t, LRUKNode</code>，用于保存frame_id对应的LRUKNode，其中LRUKNode包含了<code>frame_id</code>对应的<code>history</code>, <code>is_evictable</code>, <code>k</code>. 从简单到复杂，实现几个Methods：</p>
+<ul>
+<li><code>Size()</code>：返回<code>curr_size_</code></li>
+<li><code>SetEvictable</code>：修改<code>LRUKNode</code>的数据，维护两个<code>std::list&lt;frame_id_t&gt;</code>，修改<code>curr_size_</code>等信息。</li>
+<li><code>Remove</code>：我直接把<code>LRUKNode</code>删掉了，维护<code>std::list&lt;frame_id_t&gt;</code>等数据。当Buffer Pool Manager调用<code>DeletePage</code>时，会调用<code>Remove</code>，这表明Buffer Pool不再关心这个frame，所以可以直接删掉。</li>
+<li><code>RecordAccess</code>：修改<code>LRUKNode</code>中的history，维护两个<code>std::list&lt;frame_id_t&gt;</code>。</li>
+<li><code>Evict</code>：先删去访问次数小于K的list的第一个元素（FIFO），如果访问次数都大于K，那么遍历访问次数大于K的list，找到backward k-distance最大的frame_id，然后删除这个frame_id。时间复杂度<span class="arithmatex">\(O(n)\)</span>。</li>
+</ul>
+<p>好几个Method都需要根据<code>LRUKNode</code>的数据，调整两个<code>std::list&lt;frame_id_t&gt;</code>，所以可以把这个逻辑封装一下。</p>
+<div class="admonition failure">
+<p class="admonition-title">误区</p>
+<p>看了下网上的一些实现，发现有些人也维护了两个<code>std::list&lt;frame_id_t&gt;</code>，但是他们对访问次数超过K的list使用了LRU算法。我认为这是不能等同于LRU-K的。举一个例子，假设K=2。现在对于frame 1, 访问时间是1, 9. 对于frame 2, 访问时间是4, 5. 现在的时间为10, 我需要Evict一个frame。如果按照LRU算法，那么frame 2会被替换，但是按照LRU-K算法，frame 1会被替换（因为frame 1的backward k-distance是10-1=9，frame 2的backward k-distance是10-4=6）所以这两个算法是不同的。我这边老老实实地<span class="arithmatex">\(O(N)\)</span>遍历（曾经想用堆，但是维护堆的时间复杂度也差不多，实现起来还麻烦）</p>
+</div>
+<h2 id="task-2-disk-scheduler">Task #2 - Disk Scheduler</h2>
+<p>The disk scheduler can be used by other components to queue disk requests, represented by a <code>DiskRequest</code> struct. The disk scheduler will maintain a background worker thread which is responsible for processing scheduled requests.</p>
+<p>The disk scheduler will utilize a shared queue to schedule and process the <code>DiskRequest</code>s. One thread will add 
+requests to the queue, and the disk scheduler's background worker will process requests.</p>
+<h3 id="disk-manager">Disk Manager</h3>
+<p>The Disk Manager class reads and writes the page data from and to the disk. Your disk scheduler will 
+use <code>DiskManager::ReadPage()</code> and <code>DiskManager::WritePage()</code> when it is processing a read or write request.</p>
+<div class="admonition note">
+<p class="admonition-title">Task</p>
+<ul>
+<li><code>Schedule(DiskRequest r)</code> : Schedules a request for the <code>DiskManager</code> to execute. The DiskRequest struct specifies whether the request is for a read/write, where the data should be written into/from, and the page ID for the operation. The <code>DiskRequest</code> also includes a <code>std::promise</code> whose value should be set to true once the request is processed.</li>
+<li><code>StartWorkerThread()</code> : Start method for the background worker thread which processes the scheduled requests. The worker thread is created in the DiskScheduler constructor and calls this method. This method is responsible for getting queued requests and dispatching them to the <code>DiskManager</code>. Remember to set the value on the <code>DiskRequest</code>'s callback to signal to the request issuer that the request has been completed. This should not return until the <code>DiskScheduler</code>'s destructor is called.</li>
+</ul>
+</div>
+<p>乍一看很高级，实际上很简单。<code>Schedule</code>方法就是把<code>DiskRequest</code>放到<code>std::queue&lt;DiskRequest&gt;</code>中，<code>StartWorkerThread</code>运行在
+background worker thread中，死循环从<code>std::queue&lt;DiskRequest&gt;</code>中取出<code>DiskRequest</code>，然后调用<code>DiskManager::ReadPage()</code>和<code>DiskManager::WritePage()</code>，最后设置<code>DiskRequest</code>的<code>std::promise</code>的值。直到取出<code>std::nullopt</code>才退出。</p>
+<h2 id="task-3-buffer-pool-manager">Task #3 - Buffer Pool Manager</h2>
+<p><strong>The <code>BufferPoolManager</code> is responsible for fetching database pages from disk with the <code>DiskScheduler</code> and storing them in memory. The <code>BufferPoolManager</code> can also schedule writes of dirty pages out to disk</strong> when it is either explicitly instructed to do so or when it needs to evict a page to make space for a new page.</p>
+<p>All in-memory pages in the system are represented by <code>Page</code> objects. It is important to understand that <strong><code>Page</code> objects are just containers for memory in the buffer pool and thus are not specific to a unique page.</strong> The <code>Page</code> object's identifier (<code>page_id</code>) keeps track of what physical page it contains.
+Each <code>Page</code> object also maintains a counter for the number of threads that have "pinned" that page.</p>
+<div class="admonition note">
+<p class="admonition-title">Task</p>
+<ul>
+<li><code>FetchPage(page_id_t page_id)</code></li>
+<li><code>UnpinPage(page_id_t page_id, bool is_dirty)</code>, the <code>is_dirty</code> parameter keeps track of whether a page was modified while it was pinned.</li>
+<li><code>FlushPage(page_id_t page_id)</code>: flush a page regardless of its pin status.</li>
+<li><code>NewPage(page_id_t* page_id)</code>: should call <code>AllocatePage</code></li>
+<li><code>DeletePage(page_id_t page_id)</code>: should call <code>DeallocatePage</code></li>
+</ul>
+</div>
+<p>从<code>BufferPoolManager</code>的代码，我们可以看出一些端倪：
+<div class="language-cpp highlight"><span class="filename">buffer_pool_manager.h</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="w"> </span><span class="k">private</span><span class="o">:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="cm">/** Number of pages in the buffer pool. */</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">pool_size_</span><span class="p">;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="cm">/** The next page id to be allocated  */</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="n">page_id_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">next_page_id_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="cm">/** Array of buffer pool pages. */</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="n">Page</span><span class="w"> </span><span class="o">*</span><span class="n">pages_</span><span class="p">;</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="cm">/** Pointer to the disk scheduler. */</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">DiskScheduler</span><span class="o">&gt;</span><span class="w"> </span><span class="n">disk_scheduler_</span><span class="w"> </span><span class="n">__attribute__</span><span class="p">((</span><span class="n">__unused__</span><span class="p">));</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">  </span><span class="cm">/** Pointer to the log manager. Please ignore this for P1. */</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span><span class="n">LogManager</span><span class="w"> </span><span class="o">*</span><span class="n">log_manager_</span><span class="w"> </span><span class="n">__attribute__</span><span class="p">((</span><span class="n">__unused__</span><span class="p">));</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">  </span><span class="cm">/** Page table for keeping track of buffer pool pages. */</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">page_id_t</span><span class="p">,</span><span class="w"> </span><span class="n">frame_id_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">page_table_</span><span class="p">;</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">  </span><span class="cm">/** Replacer to find unpinned pages for replacement. */</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">LRUKReplacer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">replacer_</span><span class="p">;</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">  </span><span class="cm">/** List of free frames that don&#39;t have any pages on them. */</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">frame_id_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">free_list_</span><span class="p">;</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">  </span><span class="cm">/** This latch protects shared data structures. We recommend updating this comment to describe what it protects. */</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">latch_</span><span class="p">;</span>
+</span></code></pre></div></p>
+<p>Buffer Pool的本质就是<code>Page *pages_</code>, 一个<code>Page</code>数组。在这个数组里面的每一个<code>Page</code> object 都是一个container，用于存储从
+disk读取的page。<code>frame_id_t</code>实际上可以直接理解为数组的下标。</p>
+<p>这从<code>BufferPoolManager</code>的constructor中可以看出来：
+用循环把<code>pages_</code>的下标放到<code>free_list_</code>中。
+<div class="language-cpp highlight"><span class="filename">buffer_pool_manager.cpp</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">BufferPoolManager</span><span class="o">::</span><span class="n">BufferPoolManager</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">pool_size</span><span class="p">,</span><span class="w"> </span><span class="n">DiskManager</span><span class="w"> </span><span class="o">*</span><span class="n">disk_manager</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">replacer_k</span><span class="p">,</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">                                     </span><span class="n">LogManager</span><span class="w"> </span><span class="o">*</span><span class="n">log_manager</span><span class="p">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">pool_size_</span><span class="p">(</span><span class="n">pool_size</span><span class="p">),</span><span class="w"> </span><span class="n">disk_scheduler_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">DiskScheduler</span><span class="o">&gt;</span><span class="p">(</span><span class="n">disk_manager</span><span class="p">)),</span><span class="w"> </span><span class="n">log_manager_</span><span class="p">(</span><span class="n">log_manager</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="c1">// we allocate a consecutive memory space for the buffer pool</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="n">pages_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Page</span><span class="p">[</span><span class="n">pool_size_</span><span class="p">];</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="n">replacer_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">LRUKReplacer</span><span class="o">&gt;</span><span class="p">(</span><span class="n">pool_size</span><span class="p">,</span><span class="w"> </span><span class="n">replacer_k</span><span class="p">);</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span><span class="c1">// Initially, every page is in the free list.</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">pool_size_</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="n">free_list_</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="p">}</span>
+</span></code></pre></div></p>
+<p>接下来就可以宏观地理解Buffer Pool Manager。首先，它为什么要存在？在我看来，
+Buffer Pool把Disk中的page读取到内存中，这样就可以加快访问速度，减少Disk IO。它抽象了内存和Disk之间的交互，让其他模块不需要关心内存和Disk的交互细节。</p>
+<p>如何实现Buffer Pool Manager呢？前面已经完成了基本的组件，现在只需要把它们组合起来就可以了。当Buffer Pool Manager
+需要与Disk交互时，它会把<code>DiskRequest</code>发送给<code>DiskScheduler</code>，等<code>DiskScheduler</code>处理完毕后，<code>DiskScheduler</code>通知
+<code>BufferPoolManager</code>。 Buffer Pool Manager调用<code>LRUKReplacer</code>的接口，记录page的访问情况，根据不同情况配置<code>SetEvictable</code>。
+当它需要替换一个page时，它会调用<code>LRUKReplacer</code>的<code>Evict</code>方法，<code>LRUKReplacer</code>会返回一个<code>frame_id_t</code>，然后Buffer Pool Manager就可以把这个<code>frame_id_t</code>对应的<code>Page</code>替换掉。</p>
+<p>宏观上理解了Buffer Pool Manager，接下来的细节就不必多说了，GPT和Copilot在实现、测试的过程中可以起到很大的帮助。</p>
+<p>最喜欢的一集：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Autograder Score
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>100.0 / 100.0
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>Passed Tests
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>Build.Prepare (0/0)
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>Build (0/0)
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>Build.ClangFormat (0/0)
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>Build.ClangTidy (0/0)
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>Build.RelWithDebInfo (0/0)
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>BufferPoolManagerTest.SchedulerCheck (0/0)
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>LRUKReplacerTest.SampleTest (6/6)
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>LRUKReplacerTest.Evict (6/6)
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>LRUKReplacerTest.Size (6/6)
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>LRUKReplacerTest.ConcurrencyTest (7/7)
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>DiskSchedulerTest.ScheduleWriteReadPageTest (7/7)
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>DiskSchedulerTest.ScheduleManyWrites (9/9)
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>BufferPoolManagerTest.SampleTest (2/2)
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>BufferPoolManagerTest.BinaryDataTest (2/2)
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>BufferPoolManagerTest.NewPage (2/2)
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>BufferPoolManagerTest.UnpinPage (2/2)
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>BufferPoolManagerTest.FetchPage (2/2)
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>BufferPoolManagerTest.DeletePage (2/2)
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>BufferPoolManagerTest.IsDirty (2/2)
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>BufferPoolManagerTest.ConcurrencyTest (3/3)
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>BufferPoolManagerTest.IntegratedTest (3/3)
+</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>BufferPoolManagerTest.HardTest_1 (6/6)
+</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>BufferPoolManagerTest.HardTest_2 (6/6)
+</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>BufferPoolManagerTest.HardTest_3 (6/6)
+</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>BufferPoolManagerTest.HardTest_4 (6/6)
+</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>Leaderboard.QPS.1 (5/5)
+</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>Leaderboard.QPS.2 (5/5)
+</span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>Leaderboard.QPS.3 (5/5)
+</span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>Leaderboard.Summary (0/0)
+</span></code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.select"], "search": "../../../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.56dfad97.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
